@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>MarTube</title>
+    <!--Libreria Fonts -->
+    <script src="https://kit.fontawesome.com/b3f4cec3f3.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-dark bg-primary">
+            <a class="navbar-brand" href="#">
+                <img src="assets/icon-youtube.jpg" width="30" height="30" class="d-inline-block align-top" alt="">
+                MarTube
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col-8 pt-4">
+                    <form>
+                        <div class="d-flex justify-content-center">
+                            <div class="col-auto  p-0">
+                                <label class="sr-only" for="inlineFormInput">Name</label>
+                                <input type="text" class="form-control mb-2" id="inlineFormInput"
+                                    placeholder="Buscar...">
+                            </div>
+
+                            <div class="col-auto p-0">
+                                <button type="button" class="btn btn-primary mb-2" onclick="buscar()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="row" id='resultados'>
+
+                    </div>
+
+
+                </div>
+                <div class="col-4" id="reproducirVideo">
+
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+        var resultadosVideos = document.getElementById('resultados')
+        listarVideos(9, '')
+
+        function listarVideos(resultados, busqueda) {
+            $.ajax({
+                url: 'https://www.googleapis.com/youtube/v3/search?',
+                data: {
+                    part: 'snippet',
+                    maxResults: resultados,
+                    order: 'viewCount',
+                    q: busqueda,
+                    type: 'video',
+                    videoDefinition: 'any',
+                    key: 'AIzaSyD8KtrA3UwaI4wDZ6nxe4WOzqNfWxxjts4'
+                },
+                success: function (res) {
+                    var htmlgenerado = ''
+                    res.items.forEach(video => {
+                        console.log(res.items)
+                        htmlgenerado += `
+                        <div class="col-4">
+                            <div class="card">
+                                <img src="${video.snippet.thumbnails.default.url}" class="card-img-top"
+                                    alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title">${video.snippet.title}</h5>
+                                    <button class="btn btn-primary" onclick="reproducir('${video.id.videoId}')">Play</button>
+                                </div>
+                            </div>
+                        </div>
+ 
+                    `
+                        resultadosVideos.innerHTML = htmlgenerado
+                    });
+                }
+            })
+        }
+
+        function buscar() {
+            var inlineFormInput = document.getElementById('inlineFormInput').value
+            console.log(inlineFormInput)
+            listarVideos(9, inlineFormInput)
+        }
+
+        function reproducir(recibiendoID) {
+            console.log(recibiendoID)
+            var reproducirVideo = document.getElementById('reproducirVideo')
+
+            reproducirVideo.innerHTML = `
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/${recibiendoID}" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+
+            `
+        }
+
+    </script>
+</body>
+
+</html>
